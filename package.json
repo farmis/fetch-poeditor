@@ -1,0 +1,29 @@
+{
+  "name": "fetch-poeditor",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Paulius Varna",
+    "email": "paul.varna@gmail.com"
+  },
+  "module": "dist/fetch-poeditor.es.js",
+  "main": "dist/fetch-poeditor.cjs.js",
+  "scripts": {
+    "test": "jest",
+    "build": "bili --format cjs,es"
+  },
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-form-data": "^1.0.0"
+  },
+  "devDependencies": {
+    "bili": "^3.1.0",
+    "dotenv": "^5.0.1",
+    "jest": "^22.4.3"
+  },
+  "keywords": [
+    "poeditor",
+    "fetch",
+    "download"
+  ]
+}
