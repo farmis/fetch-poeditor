@@ -1,9 +1,8 @@
 import fetch from 'isomorphic-fetch';
 import FormData from 'isomorphic-form-data';
+import fs from 'fs-extra';
 
 /**
- * getStrings
- * 
  * @param {Object} config - object for https://poeditor.com/docs/api#projects_export.
  * @param {String} config.api_token - POEditor API token.
  * @param {Number} config.id - ID of project.
@@ -13,7 +12,7 @@ import FormData from 'isomorphic-form-data';
  * @param {(String|String[])} [config.tags] - Filter results by tags.
  */
 
-function getStrings(_ref) {
+function singleJSON(_ref) {
   return new Promise(function ($return, $error) {
     var _ref$api_token, api_token, id, _ref$language, language, _ref$type, type, _ref$filters, filters, tags, formData, response, json, url, res, strings;
 
@@ -96,4 +95,108 @@ function getStrings(_ref) {
   });
 }
 
-export default getStrings;
+/**
+ * @param {Object} config - object for https://poeditor.com/docs/api#projects_export.
+ * @param {String} config.api_token - POEditor API token.
+ * @param {Number} config.id - ID of project.
+ */
+
+function languages(_ref) {
+  return new Promise(function ($return, $error) {
+    var _ref$api_token, api_token, id, formData, response, json;
+
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR_API_TOKEN : _ref$api_token, id = _ref.id;
+    formData = new FormData();
+    formData.append('api_token', api_token);
+    formData.append('id', id);
+    /**
+     * 
+     */
+
+    return Promise.resolve(fetch('https://api.poeditor.com/v2/languages/list', {
+      method: 'POST',
+      body: formData
+    })).then(function ($await_1) {
+      try {
+        response = $await_1;
+        return Promise.resolve(response.json()).then(function ($await_2) {
+          try {
+            json = $await_2;
+
+            if (json.response.status === 'success') {
+              return $return(json.result.languages.map(function (current) {
+                return current.code;
+              }));
+            } else {
+              return $error(new Error(json.response.message));
+            }
+
+            return $return();
+          } catch ($boundEx) {
+            return $error($boundEx);
+          }
+        }, $error);
+      } catch ($boundEx) {
+        return $error($boundEx);
+      }
+    }, $error);
+  });
+}
+
+function toFile (path, json) {
+  return new Promise(function ($return, $error) {
+    return Promise.resolve(fs.ensureFile(path)).then(function ($await_1) {
+      try {
+        return $return(fs.writeJson(path, json));
+      } catch ($boundEx) {
+        return $error($boundEx);
+      }
+    }, $error);
+  });
+}
+
+/**
+ * @param {Object} config - object for https://poeditor.com/docs/api#projects_export.
+ * @param {String} config.api_token - POEditor API token.
+ * @param {Number} config.id - ID of project.
+ */
+
+function projectToFiles (_ref) {
+  return new Promise(function ($return, $error) {
+    var _ref$api_token, api_token, id, path, langs, strings;
+
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR_API_TOKEN : _ref$api_token, id = _ref.id, path = _ref.path;
+    return Promise.resolve(languages({
+      api_token: api_token,
+      id: id
+    })).then(function ($await_1) {
+      try {
+        langs = $await_1;
+        strings = langs.map(function (lang) {
+          return new Promise(function ($return, $error) {
+            var json;
+            return Promise.resolve(singleJSON).then(function ($await_2) {
+              try {
+                json = $await_2;
+                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(lang, ".json"), json)).then(function ($await_3) {
+                  try {
+                    return $return();
+                  } catch ($boundEx) {
+                    return $error($boundEx);
+                  }
+                }, $error);
+              } catch ($boundEx) {
+                return $error($boundEx);
+              }
+            }, $error);
+          });
+        });
+        return $return();
+      } catch ($boundEx) {
+        return $error($boundEx);
+      }
+    }, $error);
+  });
+}
+
+export { singleJSON, languages, toFile, projectToFiles };
