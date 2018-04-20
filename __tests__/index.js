@@ -6,7 +6,7 @@ const {
   projectToFiles
 } = require('../dist/fetch-poeditor.cjs.js')
 
-const api_token = process.env.TOKEN
+const api_token = process.env.POEDITOR
 const id = '108369'
 
 test('singleJSON', () => {

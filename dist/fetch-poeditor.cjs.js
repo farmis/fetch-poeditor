@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -22,7 +23,7 @@ function singleJSON(_ref) {
   return new Promise(function ($return, $error) {
     var _ref$api_token, api_token, id, _ref$language, language, _ref$type, type, _ref$filters, filters, tags, formData, response, json, url, res, strings;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR_API_TOKEN : _ref$api_token, id = _ref.id, _ref$language = _ref.language, language = _ref$language === void 0 ? 'en' : _ref$language, _ref$type = _ref.type, type = _ref$type === void 0 ? 'key_value_json' : _ref$type, _ref$filters = _ref.filters, filters = _ref$filters === void 0 ? ['translated', 'proofread'] : _ref$filters, tags = _ref.tags;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$language = _ref.language, language = _ref$language === void 0 ? 'en' : _ref$language, _ref$type = _ref.type, type = _ref$type === void 0 ? 'key_value_json' : _ref$type, _ref$filters = _ref.filters, filters = _ref$filters === void 0 ? ['translated', 'proofread'] : _ref$filters, tags = _ref.tags;
     formData = new FormData();
     formData.append('api_token', api_token);
     formData.append('id', id);
@@ -111,7 +112,7 @@ function languages(_ref) {
   return new Promise(function ($return, $error) {
     var _ref$api_token, api_token, id, formData, response, json;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR_API_TOKEN : _ref$api_token, id = _ref.id;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id;
     formData = new FormData();
     formData.append('api_token', api_token);
     formData.append('id', id);
@@ -165,13 +166,14 @@ function toFile (path, json) {
  * @param {Object} config - object for https://poeditor.com/docs/api#projects_export.
  * @param {String} config.api_token - POEditor API token.
  * @param {Number} config.id - ID of project.
+ * @param {String} config.path - path to location for file saving
  */
 
 function projectToFiles (_ref) {
   return new Promise(function ($return, $error) {
     var _ref$api_token, api_token, id, path, langs, strings;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR_API_TOKEN : _ref$api_token, id = _ref.id, path = _ref.path;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, path = _ref.path;
     return Promise.resolve(languages({
       api_token: api_token,
       id: id
@@ -203,6 +205,20 @@ function projectToFiles (_ref) {
       }
     }, $error);
   });
+}
+
+var argv = require('minimist')(process.argv.slice(2));
+
+var _ = argv._,
+    p = argv.p,
+    t = argv.t;
+
+if (_ && p) {
+  projectToFiles({
+    path: _,
+    id: p,
+    api_token: t
+  }).then(console.log).catch(console.error);
 }
 
 exports.singleJSON = singleJSON;

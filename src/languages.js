@@ -7,7 +7,7 @@ import FormData from 'isomorphic-form-data'
  * @param {Number} config.id - ID of project.
  */
 async function languages({
-  api_token = process.env.POEDITOR_API_TOKEN,
+  api_token = process.env.POEDITOR,
   id,
 }) {
   /**

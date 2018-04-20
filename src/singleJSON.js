@@ -11,7 +11,7 @@ import FormData from 'isomorphic-form-data'
  * @param {(String|String[])} [config.tags] - Filter results by tags.
  */
 async function singleJSON({
-  api_token = process.env.POEDITOR_API_TOKEN,
+  api_token = process.env.POEDITOR,
   id,
   language = 'en',
   type = 'key_value_json',

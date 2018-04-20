@@ -6,9 +6,10 @@ import singleJSON from './singleJSON'
  * @param {Object} config - object for https://poeditor.com/docs/api#projects_export.
  * @param {String} config.api_token - POEditor API token.
  * @param {Number} config.id - ID of project.
+ * @param {String} config.path - path to location for file saving
  */
 export default async function ({
-  api_token = process.env.POEDITOR_API_TOKEN,
+  api_token = process.env.POEDITOR,
   id,
   path
 }) {
