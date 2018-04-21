@@ -180,13 +180,17 @@ function projectToFiles (_ref) {
     })).then(function ($await_1) {
       try {
         langs = $await_1;
-        strings = langs.map(function (lang) {
+        strings = langs.map(function (language) {
           return new Promise(function ($return, $error) {
             var json;
-            return Promise.resolve(singleJSON).then(function ($await_2) {
+            return Promise.resolve(singleJSON({
+              api_token: api_token,
+              id: id,
+              language: language
+            })).then(function ($await_2) {
               try {
                 json = $await_2;
-                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(lang, ".json"), json)).then(function ($await_3) {
+                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(language, ".json"), json)).then(function ($await_3) {
                   try {
                     return $return();
                   } catch ($boundEx) {

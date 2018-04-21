@@ -17,9 +17,13 @@ export default async function ({
   const langs = await languages({ api_token, id })
 
   // Fetch and save translations
-  const strings = langs.map(async lang => {
-    const json = await singleJSON
-    await toFile(`${path}/${id}/${lang}.json`, json)
+  const strings = langs.map(async language => {
+    const json = await singleJSON({
+      api_token,
+      id,
+      language
+    })
+    await toFile(`${path}/${id}/${language}.json`, json)
     return
   })
 }
