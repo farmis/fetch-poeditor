@@ -11,7 +11,8 @@ import singleJSON from './singleJSON'
 export default async function ({
   api_token = process.env.POEDITOR,
   id,
-  path
+  path = 'Strings',
+  type
 }) {
   // Fetch langugages
   const langs = await languages({ api_token, id })
@@ -21,9 +22,10 @@ export default async function ({
     const json = await singleJSON({
       api_token,
       id,
-      language
+      language,
+      type
     })
-    await toFile(`${path}/${id}/${language}.json`, json)
+    await toFile(`${path}/${id}/${language}.lproj/Localizable.strings`, json)
     return
   })
 }

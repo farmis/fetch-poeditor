@@ -67,7 +67,7 @@ async function singleJSON({
    * Fetch Strings ❤️
    */
   const res = await fetch(url)
-  const strings = await res.json()
+  const strings = await res.text()
   return strings
 }
 
