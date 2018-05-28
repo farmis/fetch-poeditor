@@ -2,13 +2,12 @@
 
 Need to fetch your Strings from POEditor? Hate their API? Join us and get your Strings in preffered format while using single function!
 
+Warning! Apple only atm.
+
 ## CLI
 
 ```bash
-fetch-poeditor [dir] -p [project_id] -t [poeditor_token]
-
-# if POEDITOR=your_token in env
-npx fetch-poeditor ./static/i18n -p 10836
+npm fetch-poeditor ./folder --APPLE -p 999999 -t 123zxc1^token^1zxc123
 ```
 
 ## TODO
