@@ -14,9 +14,9 @@ async function singleJSON({
   api_token = process.env.POEDITOR,
   id,
   language = 'en',
-  type = 'key_value_json',
+  type = 'apple_strings',
   filters = ['translated', 'proofread'],
-  tags
+  tags,
 }) {
   /**
    * TODO check args
@@ -33,21 +33,19 @@ async function singleJSON({
   if (filters) {
     switch (filters.constructor.name) {
       case 'Array':
-        filters.forEach(filter =>
-          formData.append('filters[]', filter)
-        )
-        break;
-      case 'String': formData.append('filters', filters)
+        filters.forEach(filter => formData.append('filters[]', filter))
+        break
+      case 'String':
+        formData.append('filters', filters)
     }
   }
   if (tags) {
     switch (tags.constructor.name) {
       case 'Array':
-        tags.forEach(tag =>
-          formData.append('tags[]', tag)
-        )
-        break;
-      case 'String': formData.append('tags', tags)
+        tags.forEach(tag => formData.append('tags[]', tag))
+        break
+      case 'String':
+        formData.append('tags', tags)
     }
   }
 
@@ -57,7 +55,7 @@ async function singleJSON({
    */
   const response = await fetch('https://api.poeditor.com/v2/projects/export', {
     method: 'POST',
-    body: formData
+    body: formData,
   })
   const json = await response.json()
   const { url } = json.result
