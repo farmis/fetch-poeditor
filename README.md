@@ -7,7 +7,7 @@ Warning! Apple only atm.
 ## CLI
 
 ```bash
-npm fetch-poeditor ./folder --APPLE -p 999999 -t 123zxc1^token^1zxc123
+npx fetch-poeditor ./folder --APPLE -p 999999 -t 123zxc1^token^1zxc123
 ```
 
 ## TODO
