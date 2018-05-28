@@ -79,7 +79,7 @@ function singleJSON(_ref) {
             return Promise.resolve(fetch(url)).then(function ($await_3) {
               try {
                 res = $await_3;
-                return Promise.resolve(res.json()).then(function ($await_4) {
+                return Promise.resolve(res.text()).then(function ($await_4) {
                   try {
                     strings = $await_4;
                     return $return(strings);
@@ -154,7 +154,7 @@ function toFile (path, json) {
   return new Promise(function ($return, $error) {
     return Promise.resolve(fs.ensureFile(path)).then(function ($await_1) {
       try {
-        return $return(fs.writeJson(path, json));
+        return $return(fs.outputFile(path, json));
       } catch ($boundEx) {
         return $error($boundEx);
       }
@@ -171,9 +171,9 @@ function toFile (path, json) {
 
 function projectToFiles (_ref) {
   return new Promise(function ($return, $error) {
-    var _ref$api_token, api_token, id, path, langs, strings;
+    var _ref$api_token, api_token, id, _ref$path, path, type, langs, strings;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, path = _ref.path;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type;
     return Promise.resolve(languages({
       api_token: api_token,
       id: id
@@ -186,11 +186,12 @@ function projectToFiles (_ref) {
             return Promise.resolve(singleJSON({
               api_token: api_token,
               id: id,
-              language: language
+              language: language,
+              type: type
             })).then(function ($await_2) {
               try {
                 json = $await_2;
-                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(language, ".json"), json)).then(function ($await_3) {
+                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(language, ".lproj/Localizable.strings"), json)).then(function ($await_3) {
                   try {
                     return $return();
                   } catch ($boundEx) {
@@ -215,15 +216,53 @@ var argv = require('minimist')(process.argv.slice(2));
 
 var _ = argv._,
     p = argv.p,
-    t = argv.t;
+    project = argv.project,
+    Project = argv.Project,
+    PROJECT = argv.PROJECT,
+    P = argv.P,
+    Projects = argv.Projects,
+    projects = argv.projects,
+    PROJECTS = argv.PROJECTS,
+    t = argv.t,
+    token = argv.token,
+    TOKEN = argv.TOKEN,
+    Token = argv.Token,
+    apple = argv.apple,
+    APPLE = argv.APPLE,
+    Apple = argv.Apple;
+var path = _;
+var getProject = p || project || Project || PROJECT || P || Projects || projects || PROJECTS;
+var getToken = t || token || TOKEN || Token;
+var isApple = apple || APPLE;
 
-if (_ && p) {
-  projectToFiles({
-    path: _,
-    id: p,
-    api_token: t
-  }).then(console.log).catch(console.error);
+if (!getToken) {
+  throw Error('Give me token! -t');
 }
+
+if (!getProject) {
+  throw Error('Give me project ID! -p');
+}
+
+if (!path) {
+  throw Error('Give me path? default arg');
+}
+
+if (isApple) {
+  console.log(getToken, getProject, isApple, path);
+  projectToFiles({
+    path: path,
+    id: getProject,
+    api_token: getToken
+  }).then(console.log).catch(console.error);
+} // if (_ && p) {
+//   projectToFiles({
+//     path: _,
+//     id: p,
+//     api_token: t
+//   })
+//     .then(console.log)
+//     .catch(console.error)
+// }
 
 exports.singleJSON = singleJSON;
 exports.languages = languages;
