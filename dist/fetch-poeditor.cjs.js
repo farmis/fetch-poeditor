@@ -110,9 +110,9 @@ function singleJSON(_ref) {
 
 function languages(_ref) {
   return new Promise(function ($return, $error) {
-    var _ref$api_token, api_token, id, formData, response, json;
+    var _ref$api_token, api_token, id, _ref$percentage, percentage, formData, response, json, res;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$percentage = _ref.percentage, percentage = _ref$percentage === void 0 ? 0 : _ref$percentage;
     formData = new FormData();
     formData.append('api_token', api_token);
     formData.append('id', id);
@@ -131,9 +131,13 @@ function languages(_ref) {
             json = $await_2;
 
             if (json.response.status === 'success') {
-              return $return(json.result.languages.map(function (current) {
+              res = json.result.languages.filter(function (current) {
+                return current.percentage > percentage;
+              }).map(function (current) {
                 return current.code;
-              }));
+              });
+              console.log("Languages with more than ".concat(percentage, "% translation: ").concat(res.join(', ')));
+              return $return(res);
             } else {
               return $error(new Error(json.response.message));
             }
@@ -171,40 +175,37 @@ function toFile (path, json) {
 
 function projectToFiles (_ref) {
   return new Promise(function ($return, $error) {
-    var _ref$api_token, api_token, id, _ref$path, path, type, langs, strings;
+    var _ref$api_token, api_token, id, _ref$path, path, type, _ref$langs, langs;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type;
-    return Promise.resolve(languages({
-      api_token: api_token,
-      id: id
-    })).then(function ($await_1) {
-      try {
-        langs = $await_1;
-        strings = langs.map(function (language) {
-          return new Promise(function ($return, $error) {
-            var json;
-            return Promise.resolve(singleJSON({
-              api_token: api_token,
-              id: id,
-              language: language,
-              type: type
-            })).then(function ($await_2) {
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type, _ref$langs = _ref.langs, langs = _ref$langs === void 0 ? ['en'] : _ref$langs;
+    return Promise.resolve(langs.forEach(function (language) {
+      return new Promise(function ($return, $error) {
+        var json, fileuri;
+        return Promise.resolve(singleJSON({
+          api_token: api_token,
+          id: id,
+          language: language,
+          type: type
+        })).then(function ($await_1) {
+          try {
+            json = $await_1;
+            fileuri = "".concat(path, "/").concat(id, "/").concat(language, ".lproj/Localizable.strings");
+            return Promise.resolve(toFile(fileuri, json)).then(function ($await_2) {
               try {
-                json = $await_2;
-                return Promise.resolve(toFile("".concat(path, "/").concat(id, "/").concat(language, ".lproj/Localizable.strings"), json)).then(function ($await_3) {
-                  try {
-                    return $return();
-                  } catch ($boundEx) {
-                    return $error($boundEx);
-                  }
-                }, $error);
+                console.log('Created => ' + fileuri);
+                return $return();
               } catch ($boundEx) {
                 return $error($boundEx);
               }
             }, $error);
-          });
-        });
-        return $return();
+          } catch ($boundEx) {
+            return $error($boundEx);
+          }
+        }, $error);
+      });
+    })).then(function ($await_3) {
+      try {
+        return $return("Doing! Not gonna tel you when done...");
       } catch ($boundEx) {
         return $error($boundEx);
       }
@@ -227,19 +228,24 @@ var _ = argv._,
     token = argv.token,
     TOKEN = argv.TOKEN,
     Token = argv.Token,
+    percentage = argv.percentage,
+    PERCENTAGE = argv.PERCENTAGE,
+    Percentage = argv.Percentage,
+    per = argv.per,
     apple = argv.apple,
     APPLE = argv.APPLE,
     Apple = argv.Apple;
 var path = _;
-var getProject = p || project || Project || PROJECT || P || Projects || projects || PROJECTS;
-var getToken = t || token || TOKEN || Token;
+var id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS;
+var api_token = t || token || TOKEN || Token;
+var isPercentage = percentage || PERCENTAGE || Percentage || per;
 var isApple = apple || APPLE;
 
-if (!getToken) {
+if (!api_token) {
   throw Error('Give me token! -t');
 }
 
-if (!getProject) {
+if (!id) {
   throw Error('Give me project ID! -p');
 }
 
@@ -248,11 +254,17 @@ if (!path) {
 }
 
 if (isApple) {
-  console.log(getToken, getProject, isApple, path);
-  projectToFiles({
-    path: path,
-    id: getProject,
-    api_token: getToken
+  languages({
+    api_token: api_token,
+    id: id,
+    percentage: isPercentage
+  }).then(function (langs) {
+    return projectToFiles({
+      path: path,
+      id: id,
+      api_token: api_token,
+      langs: langs
+    });
   }).then(console.log).catch(console.error);
 } // if (_ && p) {
 //   projectToFiles({

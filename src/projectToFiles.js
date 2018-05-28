@@ -12,20 +12,21 @@ export default async function ({
   api_token = process.env.POEDITOR,
   id,
   path = 'Strings',
-  type
+  type,
+  langs = ['en']
 }) {
-  // Fetch langugages
-  const langs = await languages({ api_token, id })
-
   // Fetch and save translations
-  const strings = langs.map(async language => {
+  await langs.forEach(async language => {
     const json = await singleJSON({
       api_token,
       id,
       language,
       type
     })
-    await toFile(`${path}/${id}/${language}.lproj/Localizable.strings`, json)
-    return
+    const fileuri = `${path}/${id}/${language}.lproj/Localizable.strings`
+    await toFile(fileuri, json)
+    console.log('Created => ' + fileuri)
+
   })
+  return `Doing! Not gonna tel you when done...`
 }

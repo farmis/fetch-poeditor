@@ -9,6 +9,7 @@ import FormData from 'isomorphic-form-data'
 async function languages({
   api_token = process.env.POEDITOR,
   id,
+  percentage = 0
 }) {
   /**
    * Body sculpting! ^_^
@@ -25,10 +26,14 @@ async function languages({
     body: formData
   })
   const json = await response.json()
+
   if (json.response.status === 'success') {
-    return json.result.languages.map(
-      current => current.code
-    )
+    const res = json.result.languages
+      .filter(current => current.percentage > percentage)
+      .map(current => current.code)
+      
+    console.log(`Languages with more than ${percentage}% translation: ${res.join(', ')}`)
+    return res
   } else {
     throw new Error(json.response.message)
   }

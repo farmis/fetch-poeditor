@@ -16,19 +16,21 @@ const {
   _,
   p, project, Project, PROJECT, P, Projects, projects, PROJECTS,
   t, token, TOKEN, Token,
+  percentage, PERCENTAGE, Percentage, per,
   apple, APPLE, Apple
 } = argv
 
 const path = _
-const getProject = p || project || Project || PROJECT || P || Projects || projects || PROJECTS
-const getToken = t || token || TOKEN || Token
+const id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS
+const api_token = t || token || TOKEN || Token
+const isPercentage = percentage || PERCENTAGE || Percentage || per
 const isApple = apple || APPLE
 
-if (!getToken) {
+if (!api_token) {
   throw Error('Give me token! -t')
 }
 
-if (!getProject) {
+if (!id) {
   throw Error('Give me project ID! -p')
 }
 
@@ -37,8 +39,8 @@ if (!path) {
 }
 
 if (isApple) {
-  console.log(getToken, getProject, isApple, path)
-  projectToFiles({ path, id: getProject, api_token: getToken })
+  languages({ api_token, id, percentage: isPercentage })
+    .then(langs => projectToFiles({ path, id, api_token, langs }))
     .then(console.log)
     .catch(console.error)
 }
