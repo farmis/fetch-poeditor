@@ -13,7 +13,8 @@ export default async function ({
   id,
   path = 'Strings',
   type,
-  langs = ['en']
+  langs = ['en'],
+  isApple = false
 }) {
   // Fetch and save translations
   await langs.forEach(async language => {
@@ -23,7 +24,14 @@ export default async function ({
       language,
       type
     })
-    const fileuri = `${path}/${id}/${language}.lproj/Localizable.strings`
+    let fileuri = ''
+    switch (type) {
+      case 'apple_strings':
+        fileuri = `${path}/${id}/${language}.lproj/Localizable.strings`
+        break
+      default:
+        fileuri = `${path}/${id}/${language}.json`
+    }
     await toFile(fileuri, json)
     console.log('Created => ' + fileuri)
 

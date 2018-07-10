@@ -21,9 +21,9 @@ var fs = _interopDefault(require('fs-extra'));
 
 function singleJSON(_ref) {
   return new Promise(function ($return, $error) {
-    var _ref$api_token, api_token, id, _ref$language, language, _ref$type, type, _ref$filters, filters, tags, formData, response, json, url, res, strings;
+    var _ref$api_token, api_token, id, _ref$language, language, _ref$type, type, _ref$filters, filters, tags, formData, response, json, url, res;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$language = _ref.language, language = _ref$language === void 0 ? 'en' : _ref$language, _ref$type = _ref.type, type = _ref$type === void 0 ? 'apple_strings' : _ref$type, _ref$filters = _ref.filters, filters = _ref$filters === void 0 ? ['translated', 'proofread'] : _ref$filters, tags = _ref.tags;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$language = _ref.language, language = _ref$language === void 0 ? 'en' : _ref$language, _ref$type = _ref.type, type = _ref$type === void 0 ? 'key_value_json' : _ref$type, _ref$filters = _ref.filters, filters = _ref$filters === void 0 ? ['translated', 'proofread'] : _ref$filters, tags = _ref.tags;
     formData = new FormData();
     formData.append('api_token', api_token);
     formData.append('id', id);
@@ -79,14 +79,16 @@ function singleJSON(_ref) {
             return Promise.resolve(fetch(url)).then(function ($await_3) {
               try {
                 res = $await_3;
-                return Promise.resolve(res.text()).then(function ($await_4) {
-                  try {
-                    strings = $await_4;
-                    return $return(strings);
-                  } catch ($boundEx) {
-                    return $error($boundEx);
-                  }
-                }, $error);
+
+                switch (type) {
+                  case 'apple_strings':
+                    return $return(res.text());
+
+                  default:
+                    return $return(res.json());
+                }
+
+                return $return();
               } catch ($boundEx) {
                 return $error($boundEx);
               }
@@ -156,13 +158,27 @@ function languages(_ref) {
 
 function toFile (path, json) {
   return new Promise(function ($return, $error) {
-    return Promise.resolve(fs.ensureFile(path)).then(function ($await_1) {
-      try {
-        return $return(fs.outputFile(path, json));
-      } catch ($boundEx) {
-        return $error($boundEx);
-      }
-    }, $error);
+    if (path && json) {
+      return Promise.resolve(fs.ensureFile(path)).then(function ($await_2) {
+        try {
+          if (json.constructor === Object) {
+            return $return(fs.outputJson(path, json));
+          } else {
+            return $return(fs.outputFile(path, json));
+          }
+
+          return $If_1.call(this);
+        } catch ($boundEx) {
+          return $error($boundEx);
+        }
+      }.bind(this), $error);
+    }
+
+    function $If_1() {
+      return $return();
+    }
+
+    return $If_1.call(this);
   });
 }
 
@@ -175,9 +191,11 @@ function toFile (path, json) {
 
 function projectToFiles (_ref) {
   return new Promise(function ($return, $error) {
-    var _ref$api_token, api_token, id, _ref$path, path, type, _ref$langs, langs;
+    var _ref$api_token, api_token, id, _ref$path, path, type, _ref$langs, langs, _ref$isApple, isApple;
 
-    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type, _ref$langs = _ref.langs, langs = _ref$langs === void 0 ? ['en'] : _ref$langs;
+    _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type, _ref$langs = _ref.langs, langs = _ref$langs === void 0 ? ['en'] : _ref$langs, _ref$isApple = _ref.isApple, isApple = _ref$isApple === void 0 ? false : _ref$isApple;
+    console.log(type); // Fetch and save translations
+
     return Promise.resolve(langs.forEach(function (language) {
       return new Promise(function ($return, $error) {
         var json, fileuri;
@@ -189,7 +207,17 @@ function projectToFiles (_ref) {
         })).then(function ($await_1) {
           try {
             json = $await_1;
-            fileuri = "".concat(path, "/").concat(id, "/").concat(language, ".lproj/Localizable.strings");
+            fileuri = '';
+
+            switch (type) {
+              case 'apple_strings':
+                fileuri = "".concat(path, "/").concat(id, "/").concat(language, ".lproj/Localizable.strings");
+                break;
+
+              default:
+                fileuri = "".concat(path, "/").concat(id, "/").concat(language, ".json");
+            }
+
             return Promise.resolve(toFile(fileuri, json)).then(function ($await_2) {
               try {
                 console.log('Created => ' + fileuri);
@@ -239,7 +267,7 @@ var path = _;
 var id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS;
 var api_token = t || token || TOKEN || Token;
 var isPercentage = percentage || PERCENTAGE || Percentage || per;
-var isApple = apple || APPLE;
+var isApple = apple || APPLE || Apple;
 
 if (!api_token) {
   throw Error('Give me token! -t');
@@ -253,20 +281,20 @@ if (!path) {
   throw Error('Give me path? default arg');
 }
 
-if (isApple) {
-  languages({
-    api_token: api_token,
+languages({
+  api_token: api_token,
+  id: id,
+  percentage: isPercentage
+}).then(function (langs) {
+  return projectToFiles(Object.assign({
+    path: path,
     id: id,
-    percentage: isPercentage
-  }).then(function (langs) {
-    return projectToFiles({
-      path: path,
-      id: id,
-      api_token: api_token,
-      langs: langs
-    });
-  }).then(console.log).catch(console.error);
-} // if (_ && p) {
+    api_token: api_token,
+    langs: langs
+  }, isApple && {
+    type: 'apple_strings'
+  }));
+}).then(console.log).catch(console.error); // if (_ && p) {
 //   projectToFiles({
 //     path: _,
 //     id: p,

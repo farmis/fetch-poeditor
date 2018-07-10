@@ -24,7 +24,7 @@ const path = _
 const id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS
 const api_token = t || token || TOKEN || Token
 const isPercentage = percentage || PERCENTAGE || Percentage || per
-const isApple = apple || APPLE
+const isApple = apple || APPLE || Apple
 
 if (!api_token) {
   throw Error('Give me token! -t')
@@ -38,12 +38,21 @@ if (!path) {
   throw Error('Give me path? default arg')
 }
 
-if (isApple) {
-  languages({ api_token, id, percentage: isPercentage })
-    .then(langs => projectToFiles({ path, id, api_token, langs }))
-    .then(console.log)
-    .catch(console.error)
-}
+languages({
+  api_token,
+  id,
+  percentage: isPercentage
+})
+  .then(langs => projectToFiles({
+    path,
+    id,
+    api_token,
+    langs,
+    ...(isApple && { type: 'apple_strings' })
+  }))
+  .then(console.log)
+  .catch(console.error)
+
 
 // if (_ && p) {
 //   projectToFiles({

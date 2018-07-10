@@ -14,7 +14,7 @@ async function singleJSON({
   api_token = process.env.POEDITOR,
   id,
   language = 'en',
-  type = 'apple_strings',
+  type = 'key_value_json',
   filters = ['translated', 'proofread'],
   tags,
 }) {
@@ -65,8 +65,11 @@ async function singleJSON({
    * Fetch Strings ❤️
    */
   const res = await fetch(url)
-  const strings = await res.text()
-  return strings
+
+  switch (type) {
+    case 'apple_strings': return res.text()
+    default: return res.json()
+  }
 }
 
 export default singleJSON
