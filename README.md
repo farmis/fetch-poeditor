@@ -2,12 +2,16 @@
 
 Need to fetch your Strings from POEditor? Hate their API? Join us and get your Strings in preffered format while using single function!
 
-Warning! Apple only atm.
-
 ## CLI
 
 ```bash
-npx fetch-poeditor ./folder --APPLE -p 999999 -t 123zxc1^token^1zxc123
+# JSON in key-value pairs
+npx fetch-poeditor ./strings-folder -p project-id -t poedtior-token
+```
+
+```bash
+# Apple Strings
+npx fetch-poeditor ./strings-folder -p project-id -t poedtior-token --APPLE
 ```
 
 ## TODO
