@@ -3,7 +3,7 @@ const {
   languages,
   projectToFiles
 } = require('../dist/fetch-poeditor.cjs.js')
-
+console.error(process.env.POEDITOR)
 const api_token = process.env.POEDITOR
 const id = '108369'
 
