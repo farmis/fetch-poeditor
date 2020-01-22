@@ -20,11 +20,11 @@ const {
   apple, APPLE, Apple
 } = argv
 
-const path = _
-const id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS
-const api_token = t || token || TOKEN || Token
-const isPercentage = percentage || PERCENTAGE || Percentage || per
-const isApple = apple || APPLE || Apple
+const path = _ || process.env.FETCH_POEDITOR_PATH
+const id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS || process.env.FETCH_POEDITOR_PROJECT
+const api_token = t || token || TOKEN || Token || process.env.FETCH_POEDITOR_TOKEN
+const isPercentage = percentage || PERCENTAGE || Percentage || per || process.env.FETCH_POEDITOR_PERCENTAGE
+const isApple = apple || APPLE || Apple || process.env.FETCH_POEDITOR_APPLE
 
 if (!api_token) {
   throw Error('Give me token! -t')
