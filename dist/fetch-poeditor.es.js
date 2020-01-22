@@ -188,8 +188,6 @@ function projectToFiles (_ref) {
     var _ref$api_token, api_token, id, _ref$path, path, type, _ref$langs, langs, _ref$isApple, isApple;
 
     _ref$api_token = _ref.api_token, api_token = _ref$api_token === void 0 ? process.env.POEDITOR : _ref$api_token, id = _ref.id, _ref$path = _ref.path, path = _ref$path === void 0 ? 'Strings' : _ref$path, type = _ref.type, _ref$langs = _ref.langs, langs = _ref$langs === void 0 ? ['en'] : _ref$langs, _ref$isApple = _ref.isApple, isApple = _ref$isApple === void 0 ? false : _ref$isApple;
-    console.log(type); // Fetch and save translations
-
     return Promise.resolve(langs.forEach(function (language) {
       return new Promise(function ($return, $error) {
         var json, fileuri;
@@ -257,11 +255,11 @@ var _ = argv._,
     apple = argv.apple,
     APPLE = argv.APPLE,
     Apple = argv.Apple;
-var path = _;
-var id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS;
-var api_token = t || token || TOKEN || Token;
-var isPercentage = percentage || PERCENTAGE || Percentage || per;
-var isApple = apple || APPLE || Apple;
+var path = _ || process.env.FETCH_POEDITOR_PATH;
+var id = p || project || Project || PROJECT || P || Projects || projects || PROJECTS || process.env.FETCH_POEDITOR_PROJECT;
+var api_token = t || token || TOKEN || Token || process.env.FETCH_POEDITOR_TOKEN;
+var isPercentage = percentage || PERCENTAGE || Percentage || per || process.env.FETCH_POEDITOR_PERCENTAGE;
+var isApple = apple || APPLE || Apple || process.env.FETCH_POEDITOR_APPLE;
 
 if (!api_token) {
   throw Error('Give me token! -t');
