@@ -1,0 +1,31 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test
+      env:
+        FETCH_POEDITOR_PATH: ${{ secrets.FETCH_POEDITOR_PATH }}
+        FETCH_POEDITOR_PROJECT: ${{ secrets.FETCH_POEDITOR_PROJECT }}
+        FETCH_POEDITOR_TOKEN: ${{ secrets.FETCH_POEDITOR_TOKEN }}
+        FETCH_POEDITOR_PERCENTAGE: ${{ secrets.FETCH_POEDITOR_PERCENTAGE }}
+        FETCH_POEDITOR_APPLE: ${{ secrets.FETCH_POEDITOR_APPLE }}
+        CI: true

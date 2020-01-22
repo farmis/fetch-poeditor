@@ -1,20 +1,13 @@
-require('dotenv').config()
-
 const {
   singleJSON,
   languages,
   projectToFiles
 } = require('../dist/fetch-poeditor.cjs.js')
 
-const api_token = process.env.POEDITOR
-const id = '108369'
-
 test('singleJSON', () => {
   expect.assertions(1)
 
   return singleJSON({
-    api_token,
-    id,
     language: 'lt',
     // type: 'key_value_json',
     // filters: ['translated', 'proofread'],
@@ -30,8 +23,6 @@ test('languages', () => {
   expect.assertions(1)
 
   return languages({
-    api_token,
-    id
   })
     .then(data => {
       expect(data)
@@ -43,8 +34,6 @@ test('projectToFiles', () => {
   expect.assertions(1)
 
   return projectToFiles({
-    api_token,
-    id,
     path: './ddd'
   })
     .then(data => {
