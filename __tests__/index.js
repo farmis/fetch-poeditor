@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const {
   singleJSON,
   languages,
