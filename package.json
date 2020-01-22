@@ -14,16 +14,16 @@
     "build": "bili --format cjs,es"
   },
   "dependencies": {
-    "commander": "^2.15.1",
-    "dotenv": "^5.0.1",
-    "fs-extra": "^5.0.0",
+    "commander": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "fs-extra": "^8.1.0",
     "isomorphic-fetch": "^2.2.1",
-    "isomorphic-form-data": "^1.0.0",
+    "isomorphic-form-data": "^2.0.0",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
-    "bili": "^3.1.0",
-    "jest": "^22.4.3"
+    "bili": "^4.8.1",
+    "jest": "^25.1.0"
   },
   "keywords": [
     "poeditor",
